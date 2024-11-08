@@ -1,0 +1,63 @@
+<div class="container">
+<form [formGroup]="budgetForm" (ngSubmit)="onSubmit()">
+  <div class="mb-3">
+    <label for="client" class="form-label">Cliente</label>
+    <input type="text" class="form-control" id="client" formControlName="client" />
+
+    <div *ngIf="budgetForm.get('client')?.hasError('clientExists')">
+      <small class="text-danger">Este cliente ya tiene un presupuesto registrado.</small>
+    </div>
+    
+  </div>
+
+  <div class="mb-3">
+    <label for="date" class="form-label">Fecha</label>
+    <input type="date" class="form-control" id="date" formControlName="date" />
+  </div>
+
+  <div formArrayName="modules">
+    <div *ngFor="let module of Modules.controls; let i = index" [formGroupName]="i">
+      <div class="border p-2 mb-3">
+        <h5>Módulo {{ i + 1 }}</h5>
+
+        <div class="mb-3">
+          <label for="type-{{ i }}" class="form-label">Tipo de módulo</label>
+          <select id="type-{{ i }}" class="form-control" formControlName="type" (change)="onModuleTypeChange(i)">
+            <option value="">Seleccione un módulo</option>
+            <option *ngFor="let module of moduleArray" [value]="module.id">{{ module.name }}</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="price-{{ i }}" class="form-label">Precio</label>
+          <input type="text" class="form-control" id="price-{{ i }}" formControlName="price" readonly />
+        </div>
+
+        <div class="mb-3">
+          <label for="slots-{{ i }}" class="form-label">Espacios que ocupa</label>
+          <input type="text" class="form-control" id="slots-{{ i }}" formControlName="slots" readonly />
+        </div>
+
+        <div class="mb-3">
+          <label for="environment-{{ i }}" class="form-label">Ambiente</label>
+          <select class="form-control" id="environment-{{ i }}" formControlName="environment">
+            <option value="">Seleccione ambiente</option>
+            <option *ngFor="let zone of zones" [value]="zone">{{ zone }}</option>
+          </select>
+        </div>
+
+        <!-- Botón para eliminar módulo -->
+        <button type="button" class="btn btn-danger" (click)="removeModule(i)">Eliminar módulo</button>
+      </div>
+    </div>
+  </div>
+  <!-- Validar que se agregan al menos 5 módulos -->
+  <div *ngIf="Modules.length < 3">
+    <p style="color: red;">Debes agregar al menos 3 módulos.</p>
+  </div>
+
+
+  <button type="button" class="btn btn-primary" (click)="addModule()">Agregar módulo</button>
+  <button type="submit" class="btn btn-success" [disabled]="!budgetForm.valid">Enviar</button>
+</form>
+</div>
